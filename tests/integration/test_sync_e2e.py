@@ -115,9 +115,9 @@ class TestJsonParserIntegration:
         assert result.success is True
         assert result.record is not None
         assert result.record["session_id"] == 99001
-        # JsonParser는 중첩 구조를 추출하지 않음 (raw_json에만 존재)
-        assert result.record["table_type"] is None  # 최상위 레벨에만 table_type 추출
-        assert result.record["event_title"] is None  # 최상위 레벨에만 event_title 추출
+        # JsonParser는 중첩 구조에서도 table_type/event_title 추출
+        assert result.record["table_type"] == "MAIN_TABLE"  # cash -> MAIN_TABLE 매핑
+        assert result.record["event_title"] == "Integration Test Event"
         assert result.record["hand_count"] == 3
         assert result.record["file_hash"] is not None
         assert len(result.record["file_hash"]) == 64  # SHA-256

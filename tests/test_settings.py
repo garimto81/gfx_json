@@ -94,7 +94,7 @@ class TestSettingsProperties:
     def test_is_supabase_configured_false(self) -> None:
         """Supabase 미설정 시 False."""
         with patch.dict(os.environ, {}, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
 
         assert settings.is_supabase_configured is False
 
@@ -141,7 +141,7 @@ class TestSettingsSecurity:
     def test_to_dict_empty_secret_key(self) -> None:
         """비어있는 secret_key 처리."""
         with patch.dict(os.environ, {}, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
 
         data = settings.to_dict()
         assert data["supabase_secret_key"] == ""

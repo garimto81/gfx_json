@@ -63,7 +63,7 @@ class HandTransformer:
             bet_structure=data.get("BetStructure", "NOLIMIT"),
             duration_seconds=self.parse_iso_duration(data.get("Duration")),
             start_datetime_utc=self._parse_datetime(data.get("StartDateTimeUTC")),
-            recording_offset_start=self.parse_iso_duration(
+            recording_offset_seconds=self.parse_iso_duration(
                 data.get("RecordingOffsetStart")
             ),
             small_blind=small_blind,

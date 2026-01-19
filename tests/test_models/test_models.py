@@ -115,7 +115,7 @@ class TestHandPlayerRecord:
         hp = HandPlayerRecord(
             hand_id=hand_id,
             player_id=player_id,
-            player_num=3,
+            seat_num=3,
             hole_cards=["As", "Kh"],
             start_stack_amt=Decimal("10000"),
             end_stack_amt=Decimal("15000"),
@@ -123,7 +123,7 @@ class TestHandPlayerRecord:
 
         assert hp.hand_id == hand_id
         assert hp.player_id == player_id
-        assert hp.player_num == 3
+        assert hp.seat_num == 3
         assert hp.hole_cards == ["As", "Kh"]
         assert hp.start_stack_amt == Decimal("10000")
 
@@ -136,13 +136,13 @@ class TestHandPlayerRecord:
         hp = HandPlayerRecord(
             hand_id=uuid4(),
             player_id=uuid4(),
-            player_num=1,
+            seat_num=1,
         )
         d = hp.to_dict()
 
         assert "hand_id" in d
         assert "player_id" in d
-        assert "player_num" in d
+        assert "seat_num" in d
 
 
 class TestSessionRecord:
@@ -323,7 +323,7 @@ class TestNormalizedData:
             HandPlayerRecord(
                 hand_id=hands[0].id,
                 player_id=players[0].id,
-                player_num=1,
+                seat_num=1,
             )
         ]
         events = [EventRecord(hand_id=hands[0].id, event_order=0, event_type="FOLD")]

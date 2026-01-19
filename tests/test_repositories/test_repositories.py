@@ -195,7 +195,7 @@ class TestUnitOfWork:
         hands = [HandRecord(session_id=1, hand_num=1)]
         players = [PlayerRecord.create(name="P1", long_name="Player 1")]
         hand_players = [
-            HandPlayerRecord(hand_id=hands[0].id, player_id=players[0].id, player_num=1)
+            HandPlayerRecord(hand_id=hands[0].id, player_id=players[0].id, seat_num=1)
         ]
         events = [EventRecord(hand_id=hands[0].id, event_order=0, event_type="FOLD")]
 
@@ -238,7 +238,7 @@ class TestUnitOfWork:
         hands = [HandRecord(session_id=1, hand_num=1)]
         players = [PlayerRecord.create(name="P1")]
         hand_players = [
-            HandPlayerRecord(hand_id=hands[0].id, player_id=players[0].id, player_num=1)
+            HandPlayerRecord(hand_id=hands[0].id, player_id=players[0].id, seat_num=1)
         ]
         events = [EventRecord(hand_id=hands[0].id, event_order=0, event_type="FOLD")]
 

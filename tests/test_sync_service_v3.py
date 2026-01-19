@@ -14,8 +14,8 @@ from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from src.sync_agent.queue.batch_queue import BatchQueue
-from src.sync_agent.queue.offline_queue import OfflineQueue
+from src.sync_agent.queues.batch_queue import BatchQueue
+from src.sync_agent.queues.offline_queue import OfflineQueue
 
 from src.sync_agent.config.settings import Settings
 from src.sync_agent.core.sync_service_v3 import SyncResult, SyncService

@@ -181,11 +181,11 @@ class TestPlayerTransformer:
 
         assert record.hand_id == hand_id
         assert record.player_id == player_id
-        assert record.player_num == 2
+        assert record.seat_num == 2
         assert record.hole_cards == ["As", "Kh"]
         assert record.start_stack_amt == Decimal("150000")
         assert record.end_stack_amt == Decimal("200000")
-        assert record.vpip_pct == pytest.approx(32.1, rel=0.01)
+        assert record.vpip_percent == pytest.approx(32.1, rel=0.01)
 
     def test_parse_hole_cards(self):
         """HoleCards 파싱 (빈 문자열 필터링)."""

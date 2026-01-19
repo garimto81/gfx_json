@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from src.sync_agent.queue.offline_queue import (
+from src.sync_agent.queues.offline_queue import (
     DeadLetterRecord,
     OfflineQueue,
     QueuedRecord,
