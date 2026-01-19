@@ -10,7 +10,6 @@ import json
 import logging
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -122,7 +121,9 @@ class JsonParser:
                 file_path=file_path,
             )
 
-    def parse_content(self, content: str, file_name: str, gfx_pc_id: str) -> ParseResult:
+    def parse_content(
+        self, content: str, file_name: str, gfx_pc_id: str
+    ) -> ParseResult:
         """문자열 내용 파싱.
 
         Args:
@@ -148,20 +149,24 @@ class JsonParser:
 
             # Optional 필드 - NULL이 아닌 경우만 추가
             table_type = self._extract_table_type(data)
-            if table_type:
-                record["table_type"] = table_type
+            record["table_type"] = table_type  # 항상 저장 (기본값 UNKNOWN)
 
             event_title = self._extract_event_title(data)
-            if event_title:
+            if event_title is not None:  # 빈 문자열도 저장
                 record["event_title"] = event_title
 
             software_version = self._extract_software_version(data)
-            if software_version:
+            if software_version is not None:  # 빈 문자열도 저장
                 record["software_version"] = software_version
 
             hand_count = self._count_hands(data)
             if hand_count:
                 record["hand_count"] = hand_count
+
+            # player_count 추출 (Hands[].Players에서)
+            player_count = self._extract_player_count(data)
+            if player_count:
+                record["player_count"] = player_count
 
             payouts = self._extract_payouts(data)
             if payouts:
@@ -218,20 +223,24 @@ class JsonParser:
 
         # Optional 필드 - NULL이 아닌 경우만 추가
         table_type = self._extract_table_type(data)
-        if table_type:
-            record["table_type"] = table_type
+        record["table_type"] = table_type  # 항상 저장 (기본값 UNKNOWN)
 
         event_title = self._extract_event_title(data)
-        if event_title:
+        if event_title is not None:  # 빈 문자열도 저장
             record["event_title"] = event_title
 
         software_version = self._extract_software_version(data)
-        if software_version:
+        if software_version is not None:  # 빈 문자열도 저장
             record["software_version"] = software_version
 
         hand_count = self._count_hands(data)
         if hand_count:
             record["hand_count"] = hand_count
+
+        # player_count 추출 (Hands[].Players에서)
+        player_count = self._extract_player_count(data)
+        if player_count:
+            record["player_count"] = player_count
 
         # payouts 컬럼은 DB에 있음
         payouts = self._extract_payouts(data)
@@ -240,7 +249,9 @@ class JsonParser:
 
         return record
 
-    def _extract_session_id(self, data: dict[str, Any], file_name: str = "") -> int | None:
+    def _extract_session_id(
+        self, data: dict[str, Any], file_name: str = ""
+    ) -> int | None:
         """session_id 추출.
 
         다양한 형식 지원 (우선순위):
@@ -269,28 +280,30 @@ class JsonParser:
 
         # 파일명에서 GameID 추출 (fallback)
         if file_name:
-            match = re.search(r'GameID=(\d+)', file_name)
+            match = re.search(r"GameID=(\d+)", file_name)
             if match:
                 return int(match.group(1))
 
         return None
 
     # Supabase table_type ENUM 값 매핑
-    TABLE_TYPE_MAPPING: dict[str, str] = field(default_factory=lambda: {
-        # 정확한 매칭
-        "feature_table": "FEATURE_TABLE",
-        "main_table": "MAIN_TABLE",
-        "final_table": "FINAL_TABLE",
-        "side_table": "SIDE_TABLE",
-        "unknown": "UNKNOWN",
-        # 일반적인 값 매핑
-        "feature": "FEATURE_TABLE",
-        "main": "MAIN_TABLE",
-        "final": "FINAL_TABLE",
-        "side": "SIDE_TABLE",
-        "cash": "MAIN_TABLE",  # cash -> MAIN_TABLE
-        "tournament": "MAIN_TABLE",
-    })
+    TABLE_TYPE_MAPPING: dict[str, str] = field(
+        default_factory=lambda: {
+            # 정확한 매칭
+            "feature_table": "FEATURE_TABLE",
+            "main_table": "MAIN_TABLE",
+            "final_table": "FINAL_TABLE",
+            "side_table": "SIDE_TABLE",
+            "unknown": "UNKNOWN",
+            # 일반적인 값 매핑
+            "feature": "FEATURE_TABLE",
+            "main": "MAIN_TABLE",
+            "final": "FINAL_TABLE",
+            "side": "SIDE_TABLE",
+            "cash": "MAIN_TABLE",  # cash -> MAIN_TABLE
+            "tournament": "MAIN_TABLE",
+        }
+    )
 
     def _extract_table_type(self, data: dict[str, Any]) -> str | None:
         """table_type 추출.
@@ -327,7 +340,7 @@ class JsonParser:
                 value = str(data["session"]["tableType"])
 
         if not value:
-            return None
+            return "UNKNOWN"  # 기본값
 
         # ENUM 매핑
         normalized = value.lower().strip()
@@ -406,7 +419,13 @@ class JsonParser:
         - {"createdAt": "..."}
         """
         # PascalCase 우선 (문서 기준 - 02-GFX-JSON-DB.md)
-        for key in ["CreatedDateTimeUTC", "created_at", "created_datetime_utc", "timestamp", "createdAt"]:
+        for key in [
+            "CreatedDateTimeUTC",
+            "created_at",
+            "created_datetime_utc",
+            "timestamp",
+            "createdAt",
+        ]:
             if key in data and data[key]:
                 return str(data[key])
 
@@ -435,6 +454,47 @@ class JsonParser:
             return int(data["handCount"])
 
         return 0
+
+    def _extract_player_count(self, data: dict[str, Any]) -> int:
+        """플레이어 수 추출.
+
+        Hands 배열의 Players에서 고유 플레이어 수 계산.
+
+        다양한 형식 지원:
+        - {"Hands": [{"Players": [...]}]}  # PascalCase
+        - {"hands": [{"players": [...]}]}  # lowercase
+        - {"player_count": 10}             # 직접 값
+        """
+        # 직접 값이 있으면 사용
+        if "player_count" in data:
+            return int(data["player_count"])
+
+        if "playerCount" in data:
+            return int(data["playerCount"])
+
+        # Hands에서 추출
+        hands = data.get("Hands") or data.get("hands") or []
+        if not hands:
+            return 0
+
+        # 모든 핸드에서 고유 플레이어 수집
+        all_players: set[str] = set()
+        for hand in hands:
+            if not isinstance(hand, dict):
+                continue
+            players = hand.get("Players") or hand.get("players") or []
+            for player in players:
+                # Name 또는 PlayerNum으로 고유 식별
+                name = player.get("Name") or player.get("name")
+                if name:
+                    all_players.add(name)
+                else:
+                    # Name이 없으면 PlayerNum 사용
+                    player_num = player.get("PlayerNum") or player.get("playerNum")
+                    if player_num is not None:
+                        all_players.add(f"player_{player_num}")
+
+        return len(all_players)
 
     def _extract_payouts(self, data: dict[str, Any]) -> list[int] | None:
         """payouts 추출.
