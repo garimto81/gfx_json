@@ -212,9 +212,9 @@ class JsonParser:
             Supabase 레코드
         """
         record = {
-            "gfx_pc_id": gfx_pc_id,
             "file_hash": file_hash,
             "file_name": path.name,
+            "nas_path": f"/nas/{gfx_pc_id}/{path.name}",  # gfx_pc_id를 nas_path에 포함
             "session_id": self._extract_session_id(data, path.name),
             "raw_json": data,
             # 내부용 메타데이터 (DB 컬럼 없음)

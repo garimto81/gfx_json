@@ -40,7 +40,7 @@ class TestJsonParserParse:
 
         assert result.success is True
         assert result.record is not None
-        assert result.record["gfx_pc_id"] == "PC01"
+        assert "PC01" in result.record["nas_path"]  # gfx_pc_id가 nas_path에 포함
         assert result.record["session_id"] == 12345
         assert result.record["table_type"] == "MAIN_TABLE"  # cash -> MAIN_TABLE 매핑
         assert result.record["hand_count"] == 3
