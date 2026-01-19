@@ -157,7 +157,7 @@ class SyncService:
             return
 
         queue_ids = [r["_queue_id"] for r in batch]
-        paths = [r["_file_path"] for r in batch]
+        [r["_file_path"] for r in batch]
 
         # 메타데이터 제거
         clean_batch = []
@@ -411,7 +411,7 @@ class CentralSyncService:
             return
 
         queue_ids = [r["_queue_id"] for r in batch]
-        paths = [r["_file_path"] for r in batch]
+        [r["_file_path"] for r in batch]
         pc_ids = [r.get("_gfx_pc_id", "UNKNOWN") for r in batch]
 
         # 메타데이터 제거

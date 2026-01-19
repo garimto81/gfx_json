@@ -16,27 +16,26 @@ export default function Dashboard() {
   useEffect(() => {
     async function loadData() {
       try {
-        // 통계 로드
-        const { data: statsData } = await supabase
-          .from("sync_stats")
-          .select("*")
-          .single();
-        if (statsData) setStats(statsData);
+        // 병렬로 모든 데이터 로드 (Waterfall 방지)
+        const [statsResult, pcResult, errorCountResult] = await Promise.all([
+          // 통계 로드
+          supabase.from("sync_stats").select("*").single(),
+          // PC 상태 로드
+          supabase.from("pc_status").select("*"),
+          // 오류 건수 계산
+          supabase
+            .from("sync_events")
+            .select("*", { count: "exact", head: true })
+            .eq("event_type", "error")
+            .gte(
+              "created_at",
+              new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+            ),
+        ]);
 
-        // PC 상태 로드
-        const { data: pcData } = await supabase.from("pc_status").select("*");
-        if (pcData) setPcList(pcData);
-
-        // 오류 건수 계산
-        const { count } = await supabase
-          .from("sync_events")
-          .select("*", { count: "exact", head: true })
-          .eq("event_type", "error")
-          .gte(
-            "created_at",
-            new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-          );
-        setPendingCount(count || 0);
+        if (statsResult.data) setStats(statsResult.data);
+        if (pcResult.data) setPcList(pcResult.data);
+        setPendingCount(errorCountResult.count || 0);
       } catch (e) {
         console.error("데이터 로드 실패:", e);
       } finally {
