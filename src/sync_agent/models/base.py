@@ -15,6 +15,7 @@ def utcnow() -> datetime:
     """UTC 현재 시간 (timezone-aware)."""
     return datetime.now(UTC)
 
+
 if TYPE_CHECKING:
     from src.sync_agent.models.event import EventRecord
     from src.sync_agent.models.hand import HandRecord
@@ -61,11 +62,11 @@ class NormalizedData:
         events: 이벤트 레코드 리스트
     """
 
-    session: "SessionRecord"
-    hands: list["HandRecord"]
-    players: list["PlayerRecord"]
-    hand_players: list["HandPlayerRecord"]
-    events: list["EventRecord"]
+    session: SessionRecord
+    hands: list[HandRecord]
+    players: list[PlayerRecord]
+    hand_players: list[HandPlayerRecord]
+    events: list[EventRecord]
 
     @property
     def stats(self) -> dict[str, int]:

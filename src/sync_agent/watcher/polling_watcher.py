@@ -6,11 +6,11 @@ watchdog 기반 폴링으로 SMB/NAS 환경에서 파일 변경 감지.
 from __future__ import annotations
 
 import asyncio
-import fnmatch
 import logging
-from dataclasses import dataclass, field
+from collections.abc import Callable, Coroutine
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Coroutine, Literal
+from typing import Any, Literal
 
 logger = logging.getLogger(__name__)
 
@@ -176,7 +176,9 @@ class PollingWatcher:
         Args:
             event: 파일 이벤트
         """
-        logger.debug(f"파일 이벤트: [{event.gfx_pc_id}] {event.event_type} - {event.path}")
+        logger.debug(
+            f"파일 이벤트: [{event.gfx_pc_id}] {event.event_type} - {event.path}"
+        )
 
         if self._on_event:
             try:
@@ -213,9 +215,7 @@ class PollingWatcher:
 
     def get_stats(self) -> dict[str, Any]:
         """통계 조회."""
-        file_counts = {
-            pc_id: len(files) for pc_id, files in self._file_states.items()
-        }
+        file_counts = {pc_id: len(files) for pc_id, files in self._file_states.items()}
         return {
             "running": self._running,
             "poll_interval": self.poll_interval,

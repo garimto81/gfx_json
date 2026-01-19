@@ -93,7 +93,9 @@ class SyncServiceV4:
         # 파일 존재 확인
         if not path.exists():
             logger.error(f"파일 없음: {file_path}")
-            return SyncResultV4(success=False, error=f"파일이 존재하지 않습니다: {file_path}")
+            return SyncResultV4(
+                success=False, error=f"파일이 존재하지 않습니다: {file_path}"
+            )
 
         try:
             # 파일 읽기

@@ -7,13 +7,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from pathlib import Path
 
 from src.sync_agent.broadcast.realtime_publisher import RealtimePublisher
 from src.sync_agent.core.sync_service_v4 import SyncServiceV4
 from src.sync_agent.db.supabase_client import SupabaseClient
 from src.sync_agent.models.base import NormalizedData
-from src.sync_agent.repositories.unit_of_work import UnitOfWork
 from src.sync_agent.transformers.pipeline import TransformationPipeline
 
 logger = logging.getLogger(__name__)
@@ -108,7 +106,9 @@ class SyncServiceWithBroadcast(SyncServiceV4):
             SyncResultV4
         """
         # 부모 메서드 호출 (실제 동기화)
-        result = await super().sync_from_content(content, gfx_pc_id, file_name, file_hash)
+        result = await super().sync_from_content(
+            content, gfx_pc_id, file_name, file_hash
+        )
 
         # 성공 시 브로드캐스트
         if result.success:

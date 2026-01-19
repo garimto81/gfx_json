@@ -18,8 +18,8 @@ from pathlib import Path
 from typing import Any, Literal
 
 from src.sync_agent.config.settings import Settings
-from src.sync_agent.core.json_parser import JsonParser, ParseResult
-from src.sync_agent.db.supabase_client import RateLimitError, SupabaseClient, UpsertResult
+from src.sync_agent.core.json_parser import JsonParser
+from src.sync_agent.db.supabase_client import RateLimitError, SupabaseClient
 from src.sync_agent.queues.batch_queue import BatchQueue
 from src.sync_agent.queues.offline_queue import OfflineQueue
 
@@ -166,7 +166,9 @@ class SyncService:
                 await asyncio.sleep(wait)
 
             except Exception as e:
-                logger.error(f"[{gfx_pc_id}] 동기화 실패, 오프라인 큐에 저장: {path}, {e}")
+                logger.error(
+                    f"[{gfx_pc_id}] 동기화 실패, 오프라인 큐에 저장: {path}, {e}"
+                )
                 await self.offline_queue.enqueue(record, gfx_pc_id, path)
                 return SyncResult(success=False, error=str(e), queued=True)
 
@@ -254,6 +256,6 @@ class SyncService:
             대기 시간 (초)
         """
         base = self.settings.rate_limit_base_delay
-        backoff = (2 ** attempt) * base
+        backoff = (2**attempt) * base
         jitter = random.uniform(0, 1)
         return backoff + jitter

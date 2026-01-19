@@ -32,7 +32,7 @@ class TrayApp:
     트레이 아이콘으로 상태를 표시합니다.
     """
 
-    def __init__(self, config: "AppConfig") -> None:
+    def __init__(self, config: AppConfig) -> None:
         """초기화.
 
         Args:
@@ -116,7 +116,8 @@ class TrayApp:
             pystray.MenuItem(
                 "시작",
                 self._on_start,
-                enabled=lambda _: self.status == SyncStatus.IDLE and self.config.is_configured(),
+                enabled=lambda _: self.status == SyncStatus.IDLE
+                and self.config.is_configured(),
             ),
             pystray.MenuItem(
                 "중지",
@@ -155,6 +156,7 @@ class TrayApp:
             logger.info("설정 저장됨")
             # 설정 다시 로드
             from src.sync_agent.config import AppConfig
+
             self.config = AppConfig.load()
 
     def _on_start(self, icon: pystray.Icon, item: pystray.MenuItem) -> None:
@@ -238,6 +240,7 @@ class TrayApp:
 
             # 다시 로드
             from src.sync_agent.config import AppConfig
+
             self.config = AppConfig.load()
 
         self._icon = pystray.Icon(

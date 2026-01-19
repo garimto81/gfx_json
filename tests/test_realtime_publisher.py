@@ -5,9 +5,8 @@ pytest tests/test_realtime_publisher.py -v
 
 from __future__ import annotations
 
-import asyncio
 from datetime import UTC, datetime
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import pytest
 
@@ -32,7 +31,9 @@ def mock_supabase_key() -> str:
 
 
 @pytest.fixture
-async def publisher(mock_supabase_url: str, mock_supabase_key: str) -> RealtimePublisher:
+async def publisher(
+    mock_supabase_url: str, mock_supabase_key: str
+) -> RealtimePublisher:
     """테스트용 RealtimePublisher."""
     pub = RealtimePublisher(
         supabase_url=mock_supabase_url,
@@ -225,9 +226,7 @@ class TestBroadcastIntegration:
     """통합 시나리오 테스트."""
 
     @pytest.mark.asyncio
-    async def test_full_workflow(
-        self, mock_supabase_url: str, mock_supabase_key: str
-    ):
+    async def test_full_workflow(self, mock_supabase_url: str, mock_supabase_key: str):
         """전체 워크플로우 테스트."""
         async with RealtimePublisher(
             supabase_url=mock_supabase_url,

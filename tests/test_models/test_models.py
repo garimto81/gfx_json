@@ -9,8 +9,6 @@ from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
-import pytest
-
 
 class TestBaseRecord:
     """BaseRecord 테스트."""
@@ -328,9 +326,7 @@ class TestNormalizedData:
                 player_num=1,
             )
         ]
-        events = [
-            EventRecord(hand_id=hands[0].id, event_order=0, event_type="FOLD")
-        ]
+        events = [EventRecord(hand_id=hands[0].id, event_order=0, event_type="FOLD")]
 
         data = NormalizedData(
             session=session,

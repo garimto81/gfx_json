@@ -9,7 +9,6 @@ from __future__ import annotations
 import json
 import logging
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -176,7 +175,9 @@ class OfflineQueue:
         # 큐 크기 확인 및 정리
         current_size = await self.count()
         if current_size >= self.max_size:
-            removed = await self._remove_oldest(count=max(1, current_size - self.max_size + 1))
+            removed = await self._remove_oldest(
+                count=max(1, current_size - self.max_size + 1)
+            )
             logger.warning(f"큐 크기 초과로 {removed}건 제거 (현재: {current_size})")
 
         cursor = await self._db.execute(
@@ -400,7 +401,9 @@ class OfflineQueue:
         )
 
         # Dead Letter에서 삭제
-        await self._db.execute("DELETE FROM dead_letter WHERE id = ?", (dead_letter_id,))
+        await self._db.execute(
+            "DELETE FROM dead_letter WHERE id = ?", (dead_letter_id,)
+        )
         await self._db.commit()
 
         new_id = cursor.lastrowid
@@ -415,14 +418,15 @@ class OfflineQueue:
         dead_letter = await self.dead_letter_count()
 
         # PC별 통계
-        async with self._db.execute(
-            """
+        async with self._db.execute("""
             SELECT gfx_pc_id, COUNT(*) as count, MAX(retry_count) as max_retry
             FROM pending_sync
             GROUP BY gfx_pc_id
-            """
-        ) as cursor:
-            pc_stats = {row["gfx_pc_id"]: {"count": row["count"], "max_retry": row["max_retry"]} for row in await cursor.fetchall()}
+            """) as cursor:
+            pc_stats = {
+                row["gfx_pc_id"]: {"count": row["count"], "max_retry": row["max_retry"]}
+                for row in await cursor.fetchall()
+            }
 
         return {
             "pending_count": pending,
@@ -459,9 +463,11 @@ class OfflineQueue:
     def _ensure_connected(self) -> None:
         """연결 상태 확인."""
         if self._db is None:
-            raise RuntimeError("OfflineQueue가 연결되지 않음. connect() 먼저 호출하세요.")
+            raise RuntimeError(
+                "OfflineQueue가 연결되지 않음. connect() 먼저 호출하세요."
+            )
 
-    async def __aenter__(self) -> "OfflineQueue":
+    async def __aenter__(self) -> OfflineQueue:
         """async with 지원."""
         await self.connect()
         return self

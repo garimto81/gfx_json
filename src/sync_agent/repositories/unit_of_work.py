@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any
 
 from src.sync_agent.db.supabase_client import SupabaseClient
 from src.sync_agent.models.base import NormalizedData

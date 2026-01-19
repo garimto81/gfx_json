@@ -5,17 +5,14 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from src.sync_agent.config.settings import Settings
 from src.sync_agent.core.agent import SyncAgent
 from src.sync_agent.core.sync_service_v3 import SyncResult, SyncService
-from src.sync_agent.queue.batch_queue import BatchQueue
-from src.sync_agent.queue.offline_queue import OfflineQueue
-from src.sync_agent.watcher.polling_watcher import FileEvent, PollingWatcher
-from src.sync_agent.watcher.registry import PCRegistry
+from src.sync_agent.watcher.polling_watcher import FileEvent
 
 
 class TestSyncAgentInit:
@@ -79,7 +76,9 @@ class TestSyncAgentStart:
             await asyncio.sleep(0.1)
             await agent.stop()
 
-        with patch.object(agent.sync_service.supabase, "connect", new_callable=AsyncMock):
+        with patch.object(
+            agent.sync_service.supabase, "connect", new_callable=AsyncMock
+        ):
             with patch.object(agent.offline_queue, "connect", new_callable=AsyncMock):
                 task = asyncio.create_task(agent.start())
                 await stop_soon()
@@ -161,7 +160,9 @@ class TestSyncAgentInitialSync:
         config_dir.mkdir()
 
         # PC 레지스트리
-        registry = {"pcs": [{"id": "PC01", "watch_path": "PC01/hands", "enabled": True}]}
+        registry = {
+            "pcs": [{"id": "PC01", "watch_path": "PC01/hands", "enabled": True}]
+        }
         (config_dir / "pc_registry.json").write_text(
             json.dumps(registry), encoding="utf-8"
         )
@@ -170,8 +171,12 @@ class TestSyncAgentInitialSync:
         pc01_dir = tmp_path / "PC01" / "hands"
         pc01_dir.mkdir(parents=True)
 
-        (pc01_dir / "session_001.json").write_text('{"session_id": 1}', encoding="utf-8")
-        (pc01_dir / "session_002.json").write_text('{"session_id": 2}', encoding="utf-8")
+        (pc01_dir / "session_001.json").write_text(
+            '{"session_id": 1}', encoding="utf-8"
+        )
+        (pc01_dir / "session_002.json").write_text(
+            '{"session_id": 2}', encoding="utf-8"
+        )
 
         return tmp_path
 

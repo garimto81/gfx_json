@@ -16,7 +16,7 @@ class SettingsDialog:
     Supabase 연결 정보와 감시 경로를 설정합니다.
     """
 
-    def __init__(self, config: "AppConfig", on_save: callable = None) -> None:
+    def __init__(self, config: AppConfig, on_save: callable = None) -> None:
         """초기화.
 
         Args:
@@ -147,15 +147,17 @@ class SettingsDialog:
         self.flush_interval_entry = ttk.Entry(
             advanced_frame, textvariable=self.flush_interval_var, width=10
         )
-        self.flush_interval_entry.grid(row=0, column=3, sticky=tk.W, pady=2, padx=(5, 0))
+        self.flush_interval_entry.grid(
+            row=0, column=3, sticky=tk.W, pady=2, padx=(5, 0)
+        )
 
         # === 버튼 ===
         button_frame = ttk.Frame(main_frame)
         button_frame.pack(fill=tk.X, pady=(10, 0))
 
-        ttk.Button(button_frame, text="테스트 연결", command=self._test_connection).pack(
-            side=tk.LEFT
-        )
+        ttk.Button(
+            button_frame, text="테스트 연결", command=self._test_connection
+        ).pack(side=tk.LEFT)
         ttk.Button(button_frame, text="취소", command=self._on_cancel).pack(
             side=tk.RIGHT, padx=(5, 0)
         )
@@ -274,7 +276,7 @@ class SettingsDialog:
         self.root.destroy()
 
 
-def show_settings_dialog(config: "AppConfig", on_save: callable = None) -> bool:
+def show_settings_dialog(config: AppConfig, on_save: callable = None) -> bool:
     """설정 다이얼로그 표시.
 
     Args:

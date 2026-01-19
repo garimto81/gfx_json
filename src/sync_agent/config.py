@@ -4,9 +4,8 @@ from __future__ import annotations
 
 import json
 import os
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -66,7 +65,7 @@ class AppConfig:
             json.dump(asdict(self), f, indent=2, ensure_ascii=False)
 
     @classmethod
-    def load(cls) -> "AppConfig":
+    def load(cls) -> AppConfig:
         """파일에서 설정 로드."""
         config_path = get_config_path()
 
@@ -74,7 +73,7 @@ class AppConfig:
             return cls()
 
         try:
-            with open(config_path, "r", encoding="utf-8") as f:
+            with open(config_path, encoding="utf-8") as f:
                 data = json.load(f)
             return cls(**data)
         except (json.JSONDecodeError, TypeError):
@@ -88,7 +87,7 @@ class AppConfig:
         """필수 설정이 완료되었는지 확인."""
         return bool(self.supabase_url and self.get_api_key())
 
-    def to_settings(self) -> "SyncAgentSettings":
+    def to_settings(self) -> SyncAgentSettings:
         """SyncAgentSettings로 변환."""
         return SyncAgentSettings(
             supabase_url=self.supabase_url,

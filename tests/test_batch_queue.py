@@ -2,8 +2,6 @@
 
 import asyncio
 
-import pytest
-
 from src.sync_agent.batch_queue import BatchQueue
 
 

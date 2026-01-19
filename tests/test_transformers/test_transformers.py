@@ -6,10 +6,8 @@ TDD: Red → Green → Refactor
 from __future__ import annotations
 
 from decimal import Decimal
-from uuid import UUID
 
 import pytest
-
 
 # 샘플 JSON 데이터
 SAMPLE_SESSION_JSON = {
@@ -143,9 +141,13 @@ class TestHandTransformer:
 
         transformer = HandTransformer()
 
-        assert transformer.parse_iso_duration("PT39.2342715S") == pytest.approx(39.23, rel=0.01)
+        assert transformer.parse_iso_duration("PT39.2342715S") == pytest.approx(
+            39.23, rel=0.01
+        )
         assert transformer.parse_iso_duration("PT5M30S") == pytest.approx(330, rel=0.01)
-        assert transformer.parse_iso_duration("PT1H30M45S") == pytest.approx(5445, rel=0.01)
+        assert transformer.parse_iso_duration("PT1H30M45S") == pytest.approx(
+            5445, rel=0.01
+        )
         assert transformer.parse_iso_duration(None) == 0.0
 
 
@@ -243,7 +245,9 @@ class TestTransformationPipeline:
         from src.sync_agent.transformers.pipeline import TransformationPipeline
 
         pipeline = TransformationPipeline()
-        data = pipeline.transform(SAMPLE_SESSION_JSON, gfx_pc_id="PC01", file_hash="abc")
+        data = pipeline.transform(
+            SAMPLE_SESSION_JSON, gfx_pc_id="PC01", file_hash="abc"
+        )
 
         # Session
         assert data.session.session_id == 133877316553960000
@@ -275,12 +279,16 @@ class TestTransformationPipeline:
             "Hands": [
                 {
                     "HandNum": 1,
-                    "Players": [{"PlayerNum": 1, "Name": "PLAYER1", "LongName": "John"}],
+                    "Players": [
+                        {"PlayerNum": 1, "Name": "PLAYER1", "LongName": "John"}
+                    ],
                     "Events": [],
                 },
                 {
                     "HandNum": 2,
-                    "Players": [{"PlayerNum": 1, "Name": "PLAYER1", "LongName": "John"}],
+                    "Players": [
+                        {"PlayerNum": 1, "Name": "PLAYER1", "LongName": "John"}
+                    ],
                     "Events": [],
                 },
             ],

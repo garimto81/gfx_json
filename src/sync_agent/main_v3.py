@@ -5,8 +5,8 @@ NAS 전용 동기화 에이전트.
 
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 # 즉시 출력 (버퍼링 없이)
 print("[BOOT] main_v3.py 로드 시작", flush=True)
@@ -96,14 +96,17 @@ def debug_startup() -> None:
 try:
     print("[BOOT] import Settings...", flush=True)
     from src.sync_agent.config.settings import Settings
+
     print("[BOOT] Settings import 완료", flush=True)
 
     print("[BOOT] import SyncAgent...", flush=True)
     from src.sync_agent.core.agent import SyncAgent
+
     print("[BOOT] SyncAgent import 완료", flush=True)
 
     print("[BOOT] import HealthCheckServer...", flush=True)
     from src.sync_agent.health.healthcheck import HealthCheckServer
+
     print("[BOOT] HealthCheckServer import 완료", flush=True)
 
     print("[BOOT] 모든 모듈 import 성공!", flush=True)
@@ -111,11 +114,13 @@ except ImportError as e:
     print(f"[ERROR] 모듈 import 실패: {e}", flush=True)
     print(f"[ERROR] sys.path: {sys.path}", flush=True)
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 except Exception as e:
     print(f"[ERROR] import 중 예외 발생: {e}", flush=True)
     import traceback
+
     traceback.print_exc()
     sys.exit(1)
 
@@ -155,7 +160,10 @@ async def main() -> None:
     # 헬스체크 서버 (선택)
     health_server: HealthCheckServer | None = None
     if settings.health_enabled:
-        print(f"[MAIN] HealthCheckServer 시작 중 (포트: {settings.health_port})...", flush=True)
+        print(
+            f"[MAIN] HealthCheckServer 시작 중 (포트: {settings.health_port})...",
+            flush=True,
+        )
         health_server = HealthCheckServer(
             port=settings.health_port,
             stats_callback=agent.get_stats,
@@ -200,6 +208,7 @@ def run() -> None:
     except Exception as e:
         print(f"[ERROR] 치명적 오류: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 

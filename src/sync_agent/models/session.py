@@ -67,7 +67,9 @@ class SessionRecord:
             "software_version": self.software_version,
             "table_type": self.table_type,
             "created_datetime_utc": (
-                self.created_datetime_utc.isoformat() if self.created_datetime_utc else None
+                self.created_datetime_utc.isoformat()
+                if self.created_datetime_utc
+                else None
             ),
             "payouts": self.payouts,
             "sync_source": self.sync_source,

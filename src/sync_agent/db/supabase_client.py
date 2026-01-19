@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 class RateLimitError(Exception):
     """Rate Limit 초과 예외 (HTTP 429)."""
 
-    def __init__(self, message: str = "Rate limit exceeded", retry_after: int | None = None):
+    def __init__(
+        self, message: str = "Rate limit exceeded", retry_after: int | None = None
+    ):
         super().__init__(message)
         self.retry_after = retry_after
 
@@ -249,7 +251,9 @@ class SupabaseClient:
             logger.warning(f"헬스체크 실패: {e}")
             return False
 
-    def _handle_response(self, response: httpx.Response, record_count: int) -> UpsertResult:
+    def _handle_response(
+        self, response: httpx.Response, record_count: int
+    ) -> UpsertResult:
         """응답 처리.
 
         Args:
@@ -294,14 +298,16 @@ class SupabaseClient:
     def _ensure_connected(self) -> None:
         """연결 상태 확인."""
         if self._client is None:
-            raise RuntimeError("SupabaseClient가 연결되지 않음. connect() 먼저 호출하세요.")
+            raise RuntimeError(
+                "SupabaseClient가 연결되지 않음. connect() 먼저 호출하세요."
+            )
 
     @property
     def is_connected(self) -> bool:
         """연결 여부."""
         return self._client is not None
 
-    async def __aenter__(self) -> "SupabaseClient":
+    async def __aenter__(self) -> SupabaseClient:
         """async with 지원."""
         await self.connect()
         return self

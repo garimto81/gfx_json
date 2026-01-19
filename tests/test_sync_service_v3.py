@@ -9,19 +9,21 @@ v3.0 설계:
 
 from __future__ import annotations
 
-import asyncio
 import json
-import tempfile
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
-from src.sync_agent.config.settings import Settings
-from src.sync_agent.core.sync_service_v3 import SyncService, SyncResult
-from src.sync_agent.db.supabase_client import RateLimitError, SupabaseClient, UpsertResult
 from src.sync_agent.queue.batch_queue import BatchQueue
 from src.sync_agent.queue.offline_queue import OfflineQueue
+
+from src.sync_agent.config.settings import Settings
+from src.sync_agent.core.sync_service_v3 import SyncResult, SyncService
+from src.sync_agent.db.supabase_client import (
+    RateLimitError,
+    SupabaseClient,
+    UpsertResult,
+)
 
 
 class TestSyncServiceInit:
@@ -134,7 +136,9 @@ class TestSyncFile:
         bad_file = tmp_path / "bad.json"
         bad_file.write_text("{ invalid json }", encoding="utf-8")
 
-        with patch.object(service, "_move_to_error_folder", new_callable=AsyncMock) as mock_move:
+        with patch.object(
+            service, "_move_to_error_folder", new_callable=AsyncMock
+        ) as mock_move:
             result = await service.sync_file(
                 path=str(bad_file),
                 event_type="created",
@@ -202,7 +206,9 @@ class TestRateLimitHandling:
         json_file.write_text('{"session_id": 1}', encoding="utf-8")
 
         # 모든 시도 Rate Limit
-        service_with_rate_limit.supabase.upsert.side_effect = RateLimitError("Rate limit")
+        service_with_rate_limit.supabase.upsert.side_effect = RateLimitError(
+            "Rate limit"
+        )
 
         result = await service_with_rate_limit.sync_file(
             path=str(json_file),
@@ -267,7 +273,9 @@ class TestBatchProcessing:
         )
 
     @pytest.mark.asyncio
-    async def test_batch_flush_on_max_size(self, service_batch: SyncService, tmp_path: Path):
+    async def test_batch_flush_on_max_size(
+        self, service_batch: SyncService, tmp_path: Path
+    ):
         """max_size 도달 시 배치 플러시."""
         files = []
         for i in range(3):
@@ -285,7 +293,9 @@ class TestBatchProcessing:
         service_batch.supabase.upsert.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_flush_batch_queue_manual(self, service_batch: SyncService, tmp_path: Path):
+    async def test_flush_batch_queue_manual(
+        self, service_batch: SyncService, tmp_path: Path
+    ):
         """수동 배치 플러시."""
         f = tmp_path / "file.json"
         f.write_text('{"session_id": 1}', encoding="utf-8")
@@ -319,7 +329,9 @@ class TestOfflineQueueIntegration:
         )
 
     @pytest.mark.asyncio
-    async def test_network_error_enqueues(self, service_offline: SyncService, tmp_path: Path):
+    async def test_network_error_enqueues(
+        self, service_offline: SyncService, tmp_path: Path
+    ):
         """네트워크 오류 시 오프라인 큐에 추가."""
         json_file = tmp_path / "test.json"
         json_file.write_text('{"session_id": 1}', encoding="utf-8")

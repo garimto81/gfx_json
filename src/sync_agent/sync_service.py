@@ -6,7 +6,7 @@ import hashlib
 import json
 import logging
 import shutil
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -370,15 +370,17 @@ class CentralSyncService:
         """
         try:
             client = self._get_client()
-            client.table("sync_events").insert({
-                "gfx_pc_id": gfx_pc_id,
-                "event_type": event_type,
-                "file_count": file_count,
-                "error_message": error_message,
-                "metadata": {
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                },
-            }).execute()
+            client.table("sync_events").insert(
+                {
+                    "gfx_pc_id": gfx_pc_id,
+                    "event_type": event_type,
+                    "file_count": file_count,
+                    "error_message": error_message,
+                    "metadata": {
+                        "timestamp": datetime.now(UTC).isoformat(),
+                    },
+                }
+            ).execute()
         except Exception as e:
             # 이벤트 로깅 실패는 무시 (핵심 기능 아님)
             logger.debug(f"이벤트 로깅 실패: {e}")

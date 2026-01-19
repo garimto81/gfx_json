@@ -6,7 +6,6 @@ import argparse
 import asyncio
 import json
 import logging
-from pathlib import Path
 from typing import Any
 
 from src.sync_agent.config import CentralSyncSettings, SyncAgentSettings
@@ -126,7 +125,7 @@ class CentralSyncAgent:
             return []
 
         try:
-            with open(registry_path, "r", encoding="utf-8") as f:
+            with open(registry_path, encoding="utf-8") as f:
                 data = json.load(f)
 
             self._registry_mtime = registry_path.stat().st_mtime

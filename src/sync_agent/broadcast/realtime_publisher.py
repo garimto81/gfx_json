@@ -7,7 +7,6 @@ WebSocket 기반 실시간 이벤트 브로드캐스트.
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -348,7 +347,7 @@ class RealtimePublisher:
         """연결 여부."""
         return self._connected and self._client is not None
 
-    async def __aenter__(self) -> "RealtimePublisher":
+    async def __aenter__(self) -> RealtimePublisher:
         """async with 지원."""
         await self.connect()
         return self

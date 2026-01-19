@@ -17,8 +17,8 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
-from uuid import UUID, uuid4
+from unittest.mock import AsyncMock, MagicMock
+from uuid import uuid4
 
 import pytest
 
@@ -30,7 +30,6 @@ from src.sync_agent.broadcast.realtime_publisher import (
 )
 from src.sync_agent.core.json_parser import JsonParser
 from src.sync_agent.db.supabase_client import SupabaseClient
-
 
 # ============================================================================
 # Fixtures
@@ -124,7 +123,10 @@ class TestJsonParserIntegration:
         assert len(result.record["file_hash"]) == 64  # SHA-256
         # raw_json에는 전체 구조 포함
         assert result.record["raw_json"]["session"]["tableType"] == "cash"
-        assert result.record["raw_json"]["session"]["eventTitle"] == "Integration Test Event"
+        assert (
+            result.record["raw_json"]["session"]["eventTitle"]
+            == "Integration Test Event"
+        )
 
     def test_parse_failure_invalid_json(self, invalid_json_file: str):
         """잘못된 JSON 파싱 실패."""

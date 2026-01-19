@@ -2,18 +2,15 @@
 
 from __future__ import annotations
 
-import asyncio
 import json
-import tempfile
 import time
 from pathlib import Path
-from typing import Any
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 
-from src.sync_agent.watcher.registry import PCInfo, PCRegistry
 from src.sync_agent.watcher.polling_watcher import FileEvent, PollingWatcher
+from src.sync_agent.watcher.registry import PCInfo, PCRegistry
 
 
 class TestPCInfo:
@@ -118,7 +115,9 @@ class TestPCRegistry:
         assert "PC02" in pc_ids
         assert "PC03" not in pc_ids
 
-    def test_reload_detects_changes(self, temp_registry_dir: Path, sample_registry: Path):
+    def test_reload_detects_changes(
+        self, temp_registry_dir: Path, sample_registry: Path
+    ):
         """레지스트리 변경 감지."""
         registry = PCRegistry(
             base_path=str(temp_registry_dir),

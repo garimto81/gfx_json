@@ -22,7 +22,6 @@ from __future__ import annotations
 import argparse
 import asyncio
 import io
-import json
 import os
 import sys
 from dataclasses import dataclass
@@ -32,7 +31,7 @@ from typing import Any
 from uuid import uuid4
 
 # Windows 콘솔 UTF-8 출력 설정
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 # 프로젝트 루트를 PYTHONPATH에 추가
 project_root = Path(__file__).parent.parent
@@ -129,6 +128,7 @@ class NASUploadTester:
     def _init_live_client(self):
         """실제 Supabase 클라이언트 초기화."""
         from dotenv import load_dotenv
+
         from src.sync_agent.db.supabase_client import SupabaseClient
 
         # .env 파일 로드
@@ -288,7 +288,9 @@ class NASUploadTester:
                 result = await self.upload_file(file_path, gfx_pc_id)
 
                 if result.success:
-                    print(f"  ✅ 성공: session_id={result.session_id} ({result.duration_ms}ms)")
+                    print(
+                        f"  ✅ 성공: session_id={result.session_id} ({result.duration_ms}ms)"
+                    )
                 else:
                     print(f"  ❌ 실패: {result.error}")
 
@@ -325,7 +327,9 @@ class NASUploadTester:
                     print(f"  - session_id: {record.get('session_id')}")
                     print(f"    gfx_pc_id: {record.get('gfx_pc_id')}")
                     print(f"    table_type: {record.get('table_type')}")
-                    print(f"    created_datetime_utc: {record.get('created_datetime_utc')}")
+                    print(
+                        f"    created_datetime_utc: {record.get('created_datetime_utc')}"
+                    )
                     print()
         else:
             # Live DB에서 검증
@@ -333,7 +337,9 @@ class NASUploadTester:
             await self.client.connect()
             try:
                 # 업로드한 session_id로 조회
-                uploaded_ids = [r.session_id for r in results if r.success and r.session_id]
+                uploaded_ids = [
+                    r.session_id for r in results if r.success and r.session_id
+                ]
                 if uploaded_ids:
                     # 최근 업로드된 데이터 조회
                     records = await self.client.select(
@@ -348,7 +354,9 @@ class NASUploadTester:
                             print(f"    gfx_pc_id: {record.get('gfx_pc_id')}")
                             print(f"    table_type: {record.get('table_type')}")
                             print(f"    event_title: {record.get('event_title')}")
-                            print(f"    created_datetime_utc: {record.get('created_datetime_utc')}")
+                            print(
+                                f"    created_datetime_utc: {record.get('created_datetime_utc')}"
+                            )
                             print(f"    hand_count: {record.get('hand_count')}")
                             print()
             finally:
@@ -364,9 +372,7 @@ class NASUploadTester:
 
 def main():
     """메인 실행."""
-    parser = argparse.ArgumentParser(
-        description="NAS → Supabase 업로드 테스트"
-    )
+    parser = argparse.ArgumentParser(description="NAS → Supabase 업로드 테스트")
     parser.add_argument(
         "--mock",
         action="store_true",
@@ -417,6 +423,7 @@ def main():
     except Exception as e:
         print(f"\n❌ 오류 발생: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

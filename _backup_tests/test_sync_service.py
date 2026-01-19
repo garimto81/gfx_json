@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -59,11 +59,15 @@ def sample_json_file(tmp_path: Path) -> Path:
     watch_dir = tmp_path / "watch"
     watch_dir.mkdir(exist_ok=True)
     json_file = watch_dir / "session_001.json"
-    json_file.write_text(json.dumps({
-        "session_id": 1,
-        "event_title": "Test Event",
-        "table_type": "Final",
-    }))
+    json_file.write_text(
+        json.dumps(
+            {
+                "session_id": 1,
+                "event_title": "Test Event",
+                "table_type": "Final",
+            }
+        )
+    )
     return json_file
 
 

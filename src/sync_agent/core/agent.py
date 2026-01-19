@@ -14,7 +14,7 @@ from typing import Any
 
 from src.sync_agent.config.settings import Settings
 from src.sync_agent.core.json_parser import JsonParser
-from src.sync_agent.core.sync_service_v3 import SyncResult, SyncService
+from src.sync_agent.core.sync_service_v3 import SyncService
 from src.sync_agent.db.supabase_client import SupabaseClient
 from src.sync_agent.queues.batch_queue import BatchQueue
 from src.sync_agent.queues.offline_queue import OfflineQueue
@@ -118,10 +118,10 @@ class SyncAgent:
         # 4개 태스크 병렬 실행
         try:
             await asyncio.gather(
-                self._scan_existing_files(),      # 시작 시 전체 스캔
-                self.watcher.start(),              # 파일 감시
-                self._process_offline_queue_loop(), # 오프라인 큐 처리
-                self._watch_registry_changes(),    # PC 레지스트리 감시
+                self._scan_existing_files(),  # 시작 시 전체 스캔
+                self.watcher.start(),  # 파일 감시
+                self._process_offline_queue_loop(),  # 오프라인 큐 처리
+                self._watch_registry_changes(),  # PC 레지스트리 감시
             )
         except asyncio.CancelledError:
             logger.info("SyncAgent 태스크 취소됨")
@@ -197,7 +197,9 @@ class SyncAgent:
                 logger.info(f"오프라인 큐 처리 완료: {len(batch)}건")
             else:
                 for item in batch:
-                    await self.offline_queue.mark_failed(item.id, result.error or "unknown")
+                    await self.offline_queue.mark_failed(
+                        item.id, result.error or "unknown"
+                    )
                 logger.warning(f"오프라인 큐 처리 실패: {result.error}")
 
         except Exception as e:

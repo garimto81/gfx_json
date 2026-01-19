@@ -96,9 +96,7 @@ class TestOfflineRecovery:
 
         # 파일 생성 (실패 → 로컬 큐로)
         watch_dir = Path(integration_settings.gfx_watch_path)
-        (watch_dir / "session.json").write_text(
-            json.dumps({"session_id": 1})
-        )
+        (watch_dir / "session.json").write_text(json.dumps({"session_id": 1}))
         await asyncio.sleep(0.5)
 
         # 로컬 큐에 저장됨 확인

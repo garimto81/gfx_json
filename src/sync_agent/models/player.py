@@ -60,7 +60,7 @@ class PlayerRecord:
         return hashlib.md5(content.encode()).hexdigest()
 
     @classmethod
-    def create(cls, name: str, long_name: str | None = None) -> "PlayerRecord":
+    def create(cls, name: str, long_name: str | None = None) -> PlayerRecord:
         """자동 해시 생성으로 PlayerRecord 생성.
 
         Args:
@@ -149,10 +149,14 @@ class HandPlayerRecord:
             "player_name": self.player_name,
             "hole_cards": self.hole_cards,
             "has_shown": self.has_shown,
-            "start_stack_amt": float(self.start_stack_amt) if self.start_stack_amt else None,
+            "start_stack_amt": (
+                float(self.start_stack_amt) if self.start_stack_amt else None
+            ),
             "end_stack_amt": float(self.end_stack_amt) if self.end_stack_amt else None,
             "cumulative_winnings_amt": (
-                float(self.cumulative_winnings_amt) if self.cumulative_winnings_amt else None
+                float(self.cumulative_winnings_amt)
+                if self.cumulative_winnings_amt
+                else None
             ),
             "blind_bet_straddle_amt": self.blind_bet_straddle_amt,
             "vpip_percent": self.vpip_percent,

@@ -77,7 +77,9 @@ class PlayerTransformer:
             went_to_showdown_percent=data.get("WentToShowDownPercent"),
             sitting_out=data.get("SittingOut", False),
             is_winner=data.get("IsWinner", False),
-            elimination_rank=data.get("EliminationRank", -1) if data.get("EliminationRank") else -1,
+            elimination_rank=(
+                data.get("EliminationRank", -1) if data.get("EliminationRank") else -1
+            ),
         )
 
     def validate(self, data: dict[str, Any]) -> list[str]:

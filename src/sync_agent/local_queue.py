@@ -166,8 +166,7 @@ class LocalQueue:
         """
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
-            cursor = conn.execute(
-                """
+            cursor = conn.execute("""
                 SELECT
                     gfx_pc_id,
                     COUNT(*) as pending_count,
@@ -175,8 +174,7 @@ class LocalQueue:
                     error_type
                 FROM pending_sync
                 GROUP BY gfx_pc_id
-                """
-            )
+                """)
             return [dict(row) for row in cursor.fetchall()]
 
     async def get_stats_by_error_type(self) -> dict[str, int]:
@@ -186,11 +184,9 @@ class LocalQueue:
             오류 유형별 건수
         """
         with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.execute(
-                """
+            cursor = conn.execute("""
                 SELECT error_type, COUNT(*) as count
                 FROM pending_sync
                 GROUP BY error_type
-                """
-            )
+                """)
             return {row[0] or "unknown": row[1] for row in cursor.fetchall()}

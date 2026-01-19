@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import pytest
-
-from src.sync_agent.queue.offline_queue import OfflineQueue, QueuedRecord, DeadLetterRecord
+from src.sync_agent.queue.offline_queue import (
+    DeadLetterRecord,
+    OfflineQueue,
+    QueuedRecord,
+)
 
 
 @pytest.fixture
@@ -148,7 +151,9 @@ class TestOfflineQueueMarkFailed:
     @pytest.mark.asyncio
     async def test_get_dead_letters(self, queue):
         """Dead Letter Queue 조회."""
-        queue_id = await queue.enqueue({"id": 1, "name": "test"}, "PC01", "/path/file.json")
+        queue_id = await queue.enqueue(
+            {"id": 1, "name": "test"}, "PC01", "/path/file.json"
+        )
 
         # Dead Letter로 이동
         for i in range(3):

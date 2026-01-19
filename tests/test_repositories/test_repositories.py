@@ -6,7 +6,7 @@ Mock을 사용하여 SupabaseClient 의존성 분리.
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -54,7 +54,9 @@ class TestBaseRepository:
         repo = SessionRepository(mock_client)
 
         records = [
-            SessionRecord(session_id=i, gfx_pc_id="PC01", file_hash=f"h{i}", file_name=f"{i}.json")
+            SessionRecord(
+                session_id=i, gfx_pc_id="PC01", file_hash=f"h{i}", file_name=f"{i}.json"
+            )
             for i in range(3)
         ]
 
@@ -195,9 +197,7 @@ class TestUnitOfWork:
         hand_players = [
             HandPlayerRecord(hand_id=hands[0].id, player_id=players[0].id, player_num=1)
         ]
-        events = [
-            EventRecord(hand_id=hands[0].id, event_order=0, event_type="FOLD")
-        ]
+        events = [EventRecord(hand_id=hands[0].id, event_order=0, event_type="FOLD")]
 
         data = NormalizedData(
             session=session,
@@ -240,9 +240,7 @@ class TestUnitOfWork:
         hand_players = [
             HandPlayerRecord(hand_id=hands[0].id, player_id=players[0].id, player_num=1)
         ]
-        events = [
-            EventRecord(hand_id=hands[0].id, event_order=0, event_type="FOLD")
-        ]
+        events = [EventRecord(hand_id=hands[0].id, event_order=0, event_type="FOLD")]
 
         data = NormalizedData(
             session=session,

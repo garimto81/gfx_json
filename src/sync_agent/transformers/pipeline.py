@@ -11,7 +11,6 @@ from src.sync_agent.models.base import NormalizedData
 from src.sync_agent.models.event import EventRecord
 from src.sync_agent.models.hand import HandRecord
 from src.sync_agent.models.player import HandPlayerRecord, PlayerRecord
-from src.sync_agent.models.session import SessionRecord
 from src.sync_agent.transformers.event_transformer import EventTransformer
 from src.sync_agent.transformers.hand_transformer import HandTransformer
 from src.sync_agent.transformers.player_transformer import PlayerTransformer

@@ -148,7 +148,7 @@ class Settings(BaseSettings):
     )
 
     @model_validator(mode="after")
-    def validate_paths(self) -> "Settings":
+    def validate_paths(self) -> Settings:
         """경로 검증."""
         # nas_base_path가 비어있지 않은지 확인
         if not self.nas_base_path:
@@ -187,5 +187,7 @@ class Settings(BaseSettings):
         # 민감 정보 마스킹
         if data.get("supabase_secret_key"):
             key = data["supabase_secret_key"]
-            data["supabase_secret_key"] = f"{key[:10]}...{key[-4:]}" if len(key) > 14 else "***"
+            data["supabase_secret_key"] = (
+                f"{key[:10]}...{key[-4:]}" if len(key) > 14 else "***"
+            )
         return data

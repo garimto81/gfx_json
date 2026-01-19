@@ -1,7 +1,5 @@
 """LocalQueue TDD 테스트."""
 
-import pytest
-
 from src.sync_agent.local_queue import LocalQueue
 
 

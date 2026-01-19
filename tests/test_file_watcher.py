@@ -4,8 +4,6 @@ import asyncio
 import time
 from pathlib import Path
 
-import pytest
-
 from src.sync_agent.file_watcher import WatchfilesWatcher
 
 
@@ -124,7 +122,7 @@ class TestFileWatcherLifecycle:
         task.cancel()
         try:
             await asyncio.wait_for(task, timeout=2.0)
-        except (asyncio.CancelledError, asyncio.TimeoutError):
+        except (TimeoutError, asyncio.CancelledError):
             pass
 
 

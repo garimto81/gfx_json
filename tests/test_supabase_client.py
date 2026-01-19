@@ -70,7 +70,9 @@ class TestSupabaseClientConnect:
     @pytest.mark.asyncio
     async def test_context_manager(self, client):
         """async with 문 지원."""
-        async with SupabaseClient(url="https://test.supabase.co", secret_key="key") as c:
+        async with SupabaseClient(
+            url="https://test.supabase.co", secret_key="key"
+        ) as c:
             assert c.is_connected is True
 
         assert c.is_connected is False
@@ -258,7 +260,9 @@ class TestSupabaseClientDelete:
         mock_response.json.return_value = [{"id": 1}, {"id": 2}]
         mock_response.raise_for_status = MagicMock()
 
-        with patch.object(client._client, "delete", new_callable=AsyncMock) as mock_delete:
+        with patch.object(
+            client._client, "delete", new_callable=AsyncMock
+        ) as mock_delete:
             mock_delete.return_value = mock_response
 
             count = await client.delete(table="test", filters={"status": "old"})

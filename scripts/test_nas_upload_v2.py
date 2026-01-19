@@ -12,17 +12,14 @@ from __future__ import annotations
 import argparse
 import asyncio
 import io
-import json
 import os
 import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
-from uuid import uuid4
 
 # Windows 콘솔 UTF-8 출력 설정
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 # 프로젝트 루트를 PYTHONPATH에 추가
 project_root = Path(__file__).parent.parent
@@ -53,6 +50,7 @@ class NASUploadTester:
     def _init_client(self):
         """Supabase 클라이언트 초기화."""
         from dotenv import load_dotenv
+
         from src.sync_agent.db.supabase_client import SupabaseClient
 
         # .env 파일 로드
@@ -60,9 +58,8 @@ class NASUploadTester:
 
         # 여러 환경 변수 형식 지원
         supabase_url = os.getenv("GFX_SYNC_SUPABASE_URL") or os.getenv("SUPABASE_URL")
-        supabase_key = (
-            os.getenv("GFX_SYNC_SUPABASE_SECRET_KEY")
-            or os.getenv("SUPABASE_SECRET_KEY")
+        supabase_key = os.getenv("GFX_SYNC_SUPABASE_SECRET_KEY") or os.getenv(
+            "SUPABASE_SECRET_KEY"
         )
 
         if not supabase_url or not supabase_key:
@@ -199,7 +196,9 @@ class NASUploadTester:
                 result = await self.upload_file(file_path, gfx_pc_id)
 
                 if result.success:
-                    print(f"  ✅ 성공: session_id={result.session_id} ({result.duration_ms}ms)")
+                    print(
+                        f"  ✅ 성공: session_id={result.session_id} ({result.duration_ms}ms)"
+                    )
                 else:
                     print(f"  ❌ 실패: {result.error}")
 
@@ -279,6 +278,7 @@ def main():
     except Exception as e:
         print(f"\n❌ 오류 발생: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

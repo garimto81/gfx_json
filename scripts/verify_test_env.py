@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 # Windows 콘솔 UTF-8 출력 설정
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 # 프로젝트 루트를 PYTHONPATH에 추가
 project_root = Path(__file__).parent.parent
@@ -54,21 +54,25 @@ def verify_sample_json_files() -> dict[str, list]:
 
             if result.success:
                 record = result.record
-                results["success"].append({
-                    "file": str(json_file.name),
-                    "pc_id": gfx_pc_id,
-                    "session_id": record.get("session_id"),
-                    "table_type": record.get("table_type"),
-                    "hand_count": record.get("hand_count"),
-                    "created_datetime_utc": record.get("created_datetime_utc"),
-                    "file_hash": record.get("file_hash", "")[:16] + "...",
-                })
+                results["success"].append(
+                    {
+                        "file": str(json_file.name),
+                        "pc_id": gfx_pc_id,
+                        "session_id": record.get("session_id"),
+                        "table_type": record.get("table_type"),
+                        "hand_count": record.get("hand_count"),
+                        "created_datetime_utc": record.get("created_datetime_utc"),
+                        "file_hash": record.get("file_hash", "")[:16] + "...",
+                    }
+                )
                 print(f"  ✅ {json_file.name} → session_id={record.get('session_id')}")
             else:
-                results["failed"].append({
-                    "file": str(json_file.name),
-                    "error": result.error,
-                })
+                results["failed"].append(
+                    {
+                        "file": str(json_file.name),
+                        "error": result.error,
+                    }
+                )
                 print(f"  ❌ {json_file.name} → {result.error}")
 
     return results
@@ -207,11 +211,13 @@ def verify_db_schema_mapping():
             print(f"  ✓ {field}: {value} → {db_type}")
 
         # 누락된 필드 확인
-        missing = set(expected_columns.keys()) - parser_fields - {
-            "id", "created_at", "updated_at", "nas_path", "payouts"
-        }
+        missing = (
+            set(expected_columns.keys())
+            - parser_fields
+            - {"id", "created_at", "updated_at", "nas_path", "payouts"}
+        )
         if missing:
-            print(f"\n⚠️ 파서에서 생성하지 않는 필드 (DB 기본값 또는 별도 처리):")
+            print("\n⚠️ 파서에서 생성하지 않는 필드 (DB 기본값 또는 별도 처리):")
             for field in sorted(missing):
                 print(f"  - {field}: {expected_columns[field]}")
 
@@ -241,7 +247,9 @@ def main():
     if results["success"]:
         print("\n성공한 파일 상세:")
         for item in results["success"]:
-            print(f"  - {item['file']} (PC: {item['pc_id']}, session: {item['session_id']})")
+            print(
+                f"  - {item['file']} (PC: {item['pc_id']}, session: {item['session_id']})"
+            )
 
     if results["failed"]:
         print("\n실패한 파일:")
