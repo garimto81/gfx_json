@@ -1,0 +1,22 @@
+task_id: task_001
+agent: backend-dev
+status: completed
+completed_at: 2026-01-15T00:00:00Z
+output:
+  summary: "JsonParser 추출 로직 개선 완료 - nested 구조 및 camelCase 지원 추가"
+  files_modified:
+    - path: C:\claude\gfx_json\src\sync_agent\core\json_parser.py
+      changes: |
+        1. 3개 추출 함수 추가:
+           - _extract_table_type: table_type/tableType 및 nested session 지원
+           - _extract_event_title: event_title/eventTitle 및 nested session 지원
+           - _extract_software_version: software_version/softwareVersion 및 nested session 지원
+
+        2. _build_record 함수 수정:
+           - NULL 값은 레코드에서 제외 (DB DEFAULT 적용)
+           - Optional 필드는 값이 있을 때만 추가
+
+        3. parse_content 함수 수정:
+           - _build_record와 동일한 로직 적용
+           - 새로운 추출 함수 사용
+errors: null

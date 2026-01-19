@@ -1,0 +1,16 @@
+# Core dependencies
+watchfiles>=0.21.0      # Rust 기반 파일 감시 (OS 네이티브 API) - 로컬용
+watchdog>=4.0.0         # 폴링 기반 파일 감시 (SMB/NAS 지원) - 중앙용
+supabase>=2.0.0         # Supabase Python 클라이언트
+pydantic-settings>=2.0  # 환경 변수 설정 관리
+aiosqlite>=0.19.0       # 비동기 SQLite (오프라인 큐)
+
+# GUI dependencies
+pystray>=0.19.0         # System Tray 앱
+Pillow>=10.0.0          # 아이콘 이미지 생성
+
+# Dev dependencies
+pytest>=8.0             # 테스트 프레임워크
+pytest-asyncio>=0.23    # 비동기 테스트 지원
+pytest-cov>=4.0         # 커버리지 리포트
+ruff>=0.1.0             # 린터/포매터

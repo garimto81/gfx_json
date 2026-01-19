@@ -1,0 +1,54 @@
+job_id: job_20260115_001
+created_at: 2026-01-15T12:50:00
+request: "옵션 B - JsonParser 추출 로직 개선 (session.tableType 지원)"
+status: completed
+completed_at: 2026-01-15T04:32:00
+
+context:
+  problem: |
+    json_parser.py의 _build_record에서 table_type, event_title, software_version을
+    root level에서만 검색하여 nested 구조(session.tableType) 지원 안됨
+  error_message: |
+    null value in column "table_type" of relation "gfx_sessions" violates not-null constraint
+  target_file: src/sync_agent/core/json_parser.py
+
+tasks:
+  - id: task_001
+    agent: backend-dev
+    action: "JsonParser 추출 로직 개선"
+    input:
+      file: C:\claude\gfx_json\src\sync_agent\core\json_parser.py
+      requirements:
+        - table_type 추출 함수 추가 (_extract_table_type)
+        - event_title 추출 함수 추가 (_extract_event_title)
+        - software_version 추출 함수 추가 (_extract_software_version)
+        - nested 구조 지원 (session.tableType, session.eventTitle 등)
+        - camelCase 지원 (tableType -> table_type)
+        - NULL 반환 시 DB DEFAULT 적용되도록 레코드에서 제외
+        - _build_record 함수 수정
+    depends_on: null
+    output_file: .claude/workflow/results/task_001.yaml
+    status: pending
+
+  - id: task_002
+    agent: test-engineer
+    action: "로컬 Docker 테스트 실행"
+    input:
+      use_result: task_001
+      test_command: |
+        docker build -t gfx-sync-agent:test . &&
+        docker run --rm -v test_data:/app/data -e ... gfx-sync-agent:test
+    depends_on: task_001
+    output_file: .claude/workflow/results/task_002.yaml
+    status: waiting
+
+  - id: task_003
+    agent: docs-writer
+    action: "NAS 배포 가이드 업데이트"
+    input:
+      use_result: task_002
+      files:
+        - json_parser.py
+    depends_on: task_002
+    output_file: .claude/workflow/results/task_003.yaml
+    status: waiting

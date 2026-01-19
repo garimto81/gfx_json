@@ -1,0 +1,10 @@
+{
+  "CreatedDateTimeUTC": "2025-10-16T08:50:21.1467634Z",
+  "EventTitle": "WSOP Test Event",
+  "SoftwareVersion": "3.2.1",
+  "Type": "FEATURE_TABLE",
+  "Hands": [
+    {"HandNumber": 1, "Players": ["Player1", "Player2"]},
+    {"HandNumber": 2, "Players": ["Player1", "Player3"]}
+  ]
+}

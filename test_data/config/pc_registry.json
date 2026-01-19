@@ -1,0 +1,11 @@
+{
+  "pcs": [
+    {
+      "id": "PC01",
+      "enabled": true,
+      "watch_path": "PC01/hands",
+      "name": "Test PC"
+    }
+  ],
+  "version": "1.0"
+}

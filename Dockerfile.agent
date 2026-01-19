@@ -1,0 +1,45 @@
+# GFX Sync Agent - NAS 중앙 모드 Docker 이미지
+# 사용: docker build -f Dockerfile.agent -t gfx-sync-agent .
+
+FROM python:3.12-slim
+
+LABEL maintainer="GFX Team"
+LABEL description="NAS 중앙 GFX JSON → Supabase 동기화 에이전트"
+
+WORKDIR /app
+
+# 시스템 의존성 설치
+# - cifs-utils: SMB 마운트 지원 (필요 시)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cifs-utils \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Python 의존성 설치
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 소스 코드 복사
+COPY src/ ./src/
+
+# 큐 디렉토리 생성
+RUN mkdir -p /app/queue
+
+# 비루트 사용자 생성 (보안)
+RUN useradd --create-home --shell /bin/bash agent
+RUN chown -R agent:agent /app
+USER agent
+
+# 환경 변수 기본값
+ENV GFX_SYNC_NAS_BASE_PATH=/app/data
+ENV GFX_SYNC_QUEUE_DB_PATH=/app/queue/pending.db
+ENV GFX_SYNC_POLL_INTERVAL=2.0
+ENV GFX_SYNC_BATCH_SIZE=500
+ENV GFX_SYNC_FLUSH_INTERVAL=5.0
+
+# 헬스체크
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import sys; sys.exit(0)"
+
+# 실행
+CMD ["python", "-m", "src.sync_agent.main", "--central"]

@@ -1,0 +1,22 @@
+{
+  "pcs": [
+    {
+      "id": "PC01",
+      "name": "GFX PC 1",
+      "description": "1번 테이블",
+      "watch_path": "PC01"
+    },
+    {
+      "id": "PC02",
+      "name": "GFX PC 2",
+      "description": "2번 테이블",
+      "watch_path": "PC02"
+    },
+    {
+      "id": "PC03",
+      "name": "GFX PC 3",
+      "description": "3번 테이블",
+      "watch_path": "PC03"
+    }
+  ]
+}

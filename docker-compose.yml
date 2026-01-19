@@ -1,0 +1,62 @@
+# GFX Sync Agent v3.0 - NAS 중앙 관리
+# 사용: docker-compose up -d
+
+version: "3.8"
+
+services:
+  # ============================================================
+  # Sync Agent v3.0 - NAS 파일 감시 및 Supabase 동기화
+  # ============================================================
+  sync-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gfx-sync-agent
+    restart: unless-stopped
+    # DNS 설정 (NAS 내부 DNS 해석 실패 방지)
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    volumes:
+      # Synology NAS 볼륨 마운트 (읽기 전용)
+      # .env 파일에서 NAS_MOUNT_PATH 설정 필수
+      - ${NAS_MOUNT_PATH}:/app/data:ro
+      # 오프라인 큐 DB (영속성)
+      - sync_queue:/app/queue
+    environment:
+      # Supabase 연결 (필수)
+      GFX_SYNC_SUPABASE_URL: ${SUPABASE_URL}
+      GFX_SYNC_SUPABASE_SECRET_KEY: ${SUPABASE_SECRET_KEY}
+      # NAS 경로
+      GFX_SYNC_NAS_BASE_PATH: /app/data
+      # 폴링 간격
+      GFX_SYNC_POLL_INTERVAL: ${POLL_INTERVAL:-2.0}
+      # 배치 설정
+      GFX_SYNC_BATCH_SIZE: ${BATCH_SIZE:-500}
+      GFX_SYNC_FLUSH_INTERVAL: ${FLUSH_INTERVAL:-5.0}
+      # 헬스체크
+      GFX_SYNC_HEALTH_PORT: "8080"
+      GFX_SYNC_HEALTH_ENABLED: "true"
+      # 로그 레벨
+      GFX_SYNC_LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "8081:8080"  # NAS 포트 충돌 방지 (8080 → 8081)
+    healthcheck:
+      # python:3.12-slim에는 curl이 없으므로 Python 사용
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ============================================================
+# Volumes
+# ============================================================
+volumes:
+  sync_queue:
+    name: gfx-sync-queue

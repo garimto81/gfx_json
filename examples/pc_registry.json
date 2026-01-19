@@ -1,0 +1,33 @@
+{
+  "pcs": [
+    {
+      "id": "PC01",
+      "name": "Main Table GFX",
+      "ip": "192.168.1.101",
+      "enabled": true,
+      "watch_path": "PC01/hands",
+      "description": "메인 테이블 GFX PC",
+      "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "PC02",
+      "name": "Feature Table GFX",
+      "ip": "192.168.1.102",
+      "enabled": true,
+      "watch_path": "PC02/hands",
+      "description": "피처 테이블 GFX PC",
+      "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "PC03",
+      "name": "Secondary Table GFX",
+      "ip": "192.168.1.103",
+      "enabled": false,
+      "watch_path": "PC03/hands",
+      "description": "보조 테이블 GFX PC (비활성화)",
+      "created_at": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "updated_at": "2026-01-13T00:00:00Z",
+  "version": "1.0"
+}

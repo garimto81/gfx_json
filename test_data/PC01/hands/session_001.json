@@ -1,0 +1,9 @@
+{
+  "session": {
+    "id": 99001,
+    "eventTitle": "Local Docker Test",
+    "softwareVersion": "3.0.0",
+    "createdAt": "2026-01-15T10:00:00Z"
+  },
+  "hands": [{"id": 1, "players": []}]
+}
