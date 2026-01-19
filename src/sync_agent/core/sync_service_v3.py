@@ -160,8 +160,9 @@ class SyncService:
 
             except RateLimitError:
                 wait = self._calculate_backoff(attempt)
+                max_retries = self.settings.rate_limit_max_retries
                 logger.warning(
-                    f"[{gfx_pc_id}] Rate Limit, 재시도 {attempt + 1}/{self.settings.rate_limit_max_retries} ({wait:.2f}s)"
+                    f"[{gfx_pc_id}] Rate Limit, 재시도 {attempt + 1}/{max_retries} ({wait:.2f}s)"
                 )
                 await asyncio.sleep(wait)
 

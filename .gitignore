@@ -61,3 +61,6 @@ out/
 
 # Supabase
 supabase/.temp/
+dashboard/next-env.d.ts
+dashboard/tsconfig.tsbuildinfo
+tasks/
