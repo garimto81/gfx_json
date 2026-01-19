@@ -143,8 +143,8 @@ class JsonParser:
                 "file_name": file_name,
                 "session_id": self._extract_session_id(data, file_name),
                 "raw_json": data,
-                # 내부용 메타데이터 (DB 컬럼 없음)
-                "_gfx_pc_id": gfx_pc_id,
+                # PRD-0007: gfx_pc_id DB 저장 (언더스코어 제거)
+                "gfx_pc_id": gfx_pc_id,
             }
 
             # Optional 필드 - NULL이 아닌 경우만 추가
@@ -217,8 +217,8 @@ class JsonParser:
             "nas_path": f"/nas/{gfx_pc_id}/{path.name}",  # gfx_pc_id를 nas_path에 포함
             "session_id": self._extract_session_id(data, path.name),
             "raw_json": data,
-            # 내부용 메타데이터 (DB 컬럼 없음)
-            "_gfx_pc_id": gfx_pc_id,
+            # PRD-0007: gfx_pc_id DB 저장 (언더스코어 제거)
+            "gfx_pc_id": gfx_pc_id,
         }
 
         # Optional 필드 - NULL이 아닌 경우만 추가
