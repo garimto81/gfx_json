@@ -283,7 +283,8 @@ class OfflineQueue:
 
         current_retry = row["retry_count"]
 
-        if current_retry >= self.max_retries - 1:
+        # PRD-0007: max_retries - 1 → max_retries (5회 재시도 후 DLQ 이동)
+        if current_retry >= self.max_retries:
             # Dead Letter Queue로 이동
             await self._db.execute(
                 """
@@ -438,7 +439,9 @@ class OfflineQueue:
         }
 
     async def _remove_oldest(self, count: int = 1) -> int:
-        """가장 오래된 레코드 제거.
+        """가장 오래된 레코드 제거 (백업 후 삭제).
+
+        PRD-0007: 삭제 전 백업 파일 저장으로 데이터 손실 방지.
 
         Args:
             count: 제거할 개수
@@ -446,16 +449,53 @@ class OfflineQueue:
         Returns:
             실제 제거된 건수
         """
-        cursor = await self._db.execute(
+        from datetime import datetime
+
+        # 1. 삭제 대상 조회
+        async with self._db.execute(
             """
-            DELETE FROM pending_sync
-            WHERE id IN (
-                SELECT id FROM pending_sync
-                ORDER BY created_at ASC
-                LIMIT ?
-            )
+            SELECT id, record_json, gfx_pc_id, file_path, retry_count, created_at
+            FROM pending_sync
+            ORDER BY created_at ASC
+            LIMIT ?
             """,
             (count,),
+        ) as cursor:
+            rows = await cursor.fetchall()
+
+        if not rows:
+            return 0
+
+        # 2. 백업 파일 저장
+        backup_records = [
+            {
+                "id": row["id"],
+                "record": json.loads(row["record_json"]),
+                "gfx_pc_id": row["gfx_pc_id"],
+                "file_path": row["file_path"],
+                "retry_count": row["retry_count"],
+                "created_at": row["created_at"],
+            }
+            for row in rows
+        ]
+
+        backup_dir = Path(self.db_path).parent / "backup"
+        backup_dir.mkdir(exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_file = backup_dir / f"overflow_{timestamp}.json"
+
+        backup_file.write_text(
+            json.dumps(backup_records, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        logger.info(f"큐 오버플로우 백업 저장: {backup_file} ({len(rows)}건)")
+
+        # 3. 삭제 실행
+        ids = [row["id"] for row in rows]
+        placeholders = ",".join("?" * len(ids))
+        cursor = await self._db.execute(
+            f"DELETE FROM pending_sync WHERE id IN ({placeholders})",
+            ids,
         )
         await self._db.commit()
         return cursor.rowcount

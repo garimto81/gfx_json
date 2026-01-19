@@ -120,8 +120,8 @@ class SyncService:
             return await self._upsert_single(record, path, gfx_pc_id)
         else:
             # 배치 경로: 큐에 추가
+            # PRD-0007: 내부 메타데이터는 _ 접두사 유지 (DB 저장 제외 필드)
             record["_file_path"] = path
-            record["_gfx_pc_id"] = gfx_pc_id
             batch = await self.batch_queue.add(record)
 
             if batch:
@@ -153,7 +153,7 @@ class SyncService:
                 await self.supabase.upsert(
                     table=self.settings.supabase_table,
                     records=[clean_record],
-                    on_conflict="session_id",
+                    on_conflict="file_hash",  # PRD-0007: session_id → file_hash (중복 방지)
                 )
                 logger.info(f"[{gfx_pc_id}] 동기화 완료: {path}")
                 return SyncResult(success=True)
@@ -191,8 +191,10 @@ class SyncService:
         metadata = []
 
         for record in batch:
-            file_path = record.pop("_file_path", "unknown")
-            gfx_pc_id = record.pop("_gfx_pc_id", "UNKNOWN")
+            # PRD-0007: pop() → get()으로 변경 (재시도 시 메타데이터 보존)
+            file_path = record.get("_file_path", "unknown")
+            # PRD-0007: gfx_pc_id는 이제 DB 컬럼으로 저장됨 (언더스코어 없음)
+            gfx_pc_id = record.get("gfx_pc_id", "UNKNOWN")
             metadata.append({"path": file_path, "pc_id": gfx_pc_id})
             # _ 접두사로 시작하는 모든 내부 필드 제거
             clean_record = {k: v for k, v in record.items() if not k.startswith("_")}
@@ -202,7 +204,7 @@ class SyncService:
             await self.supabase.upsert(
                 table=self.settings.supabase_table,
                 records=clean_batch,
-                on_conflict="session_id",
+                on_conflict="file_hash",  # PRD-0007: session_id → file_hash (중복 방지)
             )
             logger.info(f"배치 동기화 완료: {len(clean_batch)}건")
             return SyncResult(success=True)

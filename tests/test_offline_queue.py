@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+
 from src.sync_agent.queues.offline_queue import (
     DeadLetterRecord,
     OfflineQueue,
@@ -139,10 +140,12 @@ class TestOfflineQueueMarkFailed:
         """max_retries 초과 시 Dead Letter Queue로 이동."""
         queue_id = await queue.enqueue({"id": 1}, "PC01")
 
-        # max_retries=3이므로 2번 실패 후 3번째에 이동
-        await queue.mark_failed(queue_id, "error1")
-        await queue.mark_failed(queue_id, "error2")
-        moved = await queue.mark_failed(queue_id, "error3")
+        # PRD-0007: max_retries=3이면 retry_count >= 3일 때 DLQ 이동
+        # 즉, 4번 실패 후 DLQ 이동 (retry_count: 0→1→2→3에서 이동)
+        await queue.mark_failed(queue_id, "error1")  # retry_count: 0→1
+        await queue.mark_failed(queue_id, "error2")  # retry_count: 1→2
+        await queue.mark_failed(queue_id, "error3")  # retry_count: 2→3
+        moved = await queue.mark_failed(queue_id, "error4")  # retry_count: 3 → DLQ
 
         assert moved is True
         assert await queue.count() == 0
@@ -155,8 +158,8 @@ class TestOfflineQueueMarkFailed:
             {"id": 1, "name": "test"}, "PC01", "/path/file.json"
         )
 
-        # Dead Letter로 이동
-        for i in range(3):
+        # PRD-0007: 4번 실패 후 DLQ 이동
+        for i in range(4):
             await queue.mark_failed(queue_id, f"error{i}")
 
         dead_letters = await queue.get_dead_letters()
@@ -165,8 +168,8 @@ class TestOfflineQueueMarkFailed:
         assert isinstance(dead_letters[0], DeadLetterRecord)
         assert dead_letters[0].record["name"] == "test"
         assert dead_letters[0].gfx_pc_id == "PC01"
-        assert dead_letters[0].retry_count == 3
-        assert dead_letters[0].error_reason == "error2"
+        assert dead_letters[0].retry_count == 4
+        assert dead_letters[0].error_reason == "error3"
 
 
 class TestOfflineQueueRetryDeadLetter:
@@ -177,8 +180,8 @@ class TestOfflineQueueRetryDeadLetter:
         """Dead Letter 재시도 (메인 큐로 복원)."""
         queue_id = await queue.enqueue({"id": 1}, "PC01")
 
-        # Dead Letter로 이동
-        for _ in range(3):
+        # PRD-0007: 4번 실패 후 DLQ 이동
+        for _ in range(4):
             await queue.mark_failed(queue_id, "error")
 
         dead_letters = await queue.get_dead_letters()
