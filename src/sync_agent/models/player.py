@@ -49,6 +49,10 @@ class PlayerRecord:
     def generate_hash(name: str, long_name: str | None) -> str:
         """player_hash 생성.
 
+        02-GFX-JSON-DB.md 문서 기준:
+        - lower().strip() 정규화 적용
+        - MD5(name:long_name) 형식
+
         Args:
             name: 플레이어 이름
             long_name: 플레이어 전체명 (None 허용)
@@ -56,7 +60,10 @@ class PlayerRecord:
         Returns:
             MD5 해시 (32자)
         """
-        content = f"{name}:{long_name or ''}"
+        # 정규화: 소문자 변환 + 공백 제거
+        normalized_name = name.lower().strip() if name else ""
+        normalized_long_name = (long_name or "").lower().strip()
+        content = f"{normalized_name}:{normalized_long_name}"
         return hashlib.md5(content.encode()).hexdigest()
 
     @classmethod

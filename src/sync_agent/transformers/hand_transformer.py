@@ -48,11 +48,16 @@ class HandTransformer:
         big_blind = self._to_decimal(blinds_data.get("BigBlindAmt"))
         ante = self._to_decimal(data.get("AnteAmt"))
 
-        # AEP 매핑용 blinds JSONB 생성
+        # blinds JSONB 생성 (02-GFX-JSON-DB.md 문서 스키마 준수)
         blinds_jsonb = {
-            "small_blind_amt": float(small_blind) if small_blind else None,
+            "ante_type": blinds_data.get("AnteType"),
             "big_blind_amt": float(big_blind) if big_blind else None,
-            "ante": float(ante) if ante else None,
+            "big_blind_player_num": blinds_data.get("BigBlindPlayerNum"),
+            "small_blind_amt": float(small_blind) if small_blind else None,
+            "small_blind_player_num": blinds_data.get("SmallBlindPlayerNum"),
+            "button_player_num": blinds_data.get("ButtonPlayerNum"),
+            "third_blind_amt": blinds_data.get("ThirdBlindAmt", 0),
+            "blind_level": blinds_data.get("BlindLevel", 0),
         }
 
         return HandRecord(
@@ -61,15 +66,18 @@ class HandTransformer:
             game_variant=data.get("GameVariant", "HOLDEM"),
             game_class=data.get("GameClass", "FLOP"),
             bet_structure=data.get("BetStructure", "NOLIMIT"),
-            duration_seconds=self.parse_iso_duration(data.get("Duration")),
+            duration_seconds=int(self.parse_iso_duration(data.get("Duration"))),
             start_datetime_utc=self._parse_datetime(data.get("StartDateTimeUTC")),
-            recording_offset_seconds=self.parse_iso_duration(
-                data.get("RecordingOffsetStart")
+            recording_offset_iso=data.get("RecordingOffsetStart"),
+            recording_offset_seconds=int(
+                self.parse_iso_duration(data.get("RecordingOffsetStart"))
             ),
             small_blind=small_blind,
             big_blind=big_blind,
-            ante=ante,
+            ante_amt=ante,
+            bomb_pot_amt=self._to_decimal(data.get("BombPotAmt")),
             blinds=blinds_jsonb,
+            stud_limits=data.get("StudLimits"),
             num_boards=data.get("NumBoards", 1),
             run_it_num_times=data.get("RunItNumTimes", 1),
             player_count=len(data.get("Players", [])),

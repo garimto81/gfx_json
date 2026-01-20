@@ -72,7 +72,8 @@ class PlayerTransformer:
             cumulative_winnings_amt=self._to_decimal(data.get("CumulativeWinningsAmt")),
             blind_bet_straddle_amt=data.get("BlindBetStraddleAmt", 0) or 0,
             vpip_percent=data.get("VPIPPercent"),
-            preflop_raise_percent=data.get("PreflopRaisePercent"),
+            # JSON 필드명: PreFlopRaisePercent (대문자 F)
+            preflop_raise_percent=data.get("PreFlopRaisePercent"),
             aggression_frequency_percent=data.get("AggressionFrequencyPercent"),
             went_to_showdown_percent=data.get("WentToShowDownPercent"),
             sitting_out=data.get("SittingOut", False),

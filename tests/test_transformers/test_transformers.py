@@ -29,11 +29,14 @@ SAMPLE_SESSION_JSON = {
             "AnteAmt": 0,
             "BombPotAmt": 0,
             "FlopDrawBlinds": {
+                "AnteType": "BB_ANTE_BB1ST",
                 "SmallBlindAmt": 5000,
                 "BigBlindAmt": 10000,
                 "ButtonPlayerNum": 1,
                 "SmallBlindPlayerNum": 2,
                 "BigBlindPlayerNum": 3,
+                "ThirdBlindAmt": 0,
+                "BlindLevel": 5,
             },
             "Events": [
                 {"EventType": "FOLD", "PlayerNum": 4, "BetAmt": 0, "Pot": 15000},
@@ -53,7 +56,7 @@ SAMPLE_SESSION_JSON = {
                     "EndStackAmt": 85000,
                     "CumulativeWinningsAmt": -15000,
                     "VPIPPercent": 25.5,
-                    "PreflopRaisePercent": 18.2,
+                    "PreFlopRaisePercent": 18.2,
                     "AggressionFrequencyPercent": 45.0,
                 },
                 {
@@ -65,7 +68,7 @@ SAMPLE_SESSION_JSON = {
                     "EndStackAmt": 200000,
                     "CumulativeWinningsAmt": 50000,
                     "VPIPPercent": 32.1,
-                    "PreflopRaisePercent": 22.5,
+                    "PreFlopRaisePercent": 22.5,
                     "AggressionFrequencyPercent": 52.3,
                 },
             ],
@@ -134,6 +137,27 @@ class TestHandTransformer:
 
         assert record.small_blind == Decimal("5000")
         assert record.big_blind == Decimal("10000")
+
+    def test_transform_hand_blinds_jsonb_full_structure(self):
+        """blinds JSONB 전체 구조 검증 (02-GFX-JSON-DB.md 문서 준수)."""
+        from src.sync_agent.transformers.hand_transformer import HandTransformer
+
+        transformer = HandTransformer()
+        hand_data = SAMPLE_SESSION_JSON["Hands"][0]
+        record = transformer.transform(hand_data, session_id=1)
+
+        blinds = record.blinds
+        assert blinds is not None
+
+        # 문서 요구 필드 검증
+        assert blinds["ante_type"] == "BB_ANTE_BB1ST"
+        assert blinds["big_blind_amt"] == 10000.0
+        assert blinds["big_blind_player_num"] == 3
+        assert blinds["small_blind_amt"] == 5000.0
+        assert blinds["small_blind_player_num"] == 2
+        assert blinds["button_player_num"] == 1
+        assert blinds["third_blind_amt"] == 0
+        assert blinds["blind_level"] == 5
 
     def test_parse_iso_duration(self):
         """ISO 8601 Duration 파싱."""
@@ -217,7 +241,7 @@ class TestEventTransformer:
         assert record.event_order == 1
         assert record.event_type == "CALL"
         assert record.player_num == 5
-        assert record.amount == Decimal("10000")
+        assert record.bet_amt == Decimal("10000")
         assert record.pot == Decimal("25000")
 
     def test_transform_board_card_event(self):
@@ -233,7 +257,7 @@ class TestEventTransformer:
         record = transformer.transform(event_data, hand_id, event_order=3)
 
         assert record.event_type == "BOARD_CARD"
-        assert record.cards == ["Jd"]
+        assert record.board_cards == ["Jd"]
         assert record.player_num == 0  # 보드 카드는 player_num=0
 
 

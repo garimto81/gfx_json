@@ -226,12 +226,12 @@ class TestHandRecord:
             hand_num=1,
             small_blind=Decimal("50"),
             big_blind=Decimal("100"),
-            ante=Decimal("10"),
+            ante_amt=Decimal("10"),
         )
 
         assert hand.small_blind == Decimal("50")
         assert hand.big_blind == Decimal("100")
-        assert hand.ante == Decimal("10")
+        assert hand.ante_amt == Decimal("10")
 
     def test_hand_record_to_dict(self):
         """HandRecord.to_dict()는 딕셔너리를 반환한다."""
@@ -260,17 +260,17 @@ class TestEventRecord:
             event_order=0,
             event_type="BET",
             player_num=3,
-            amount=Decimal("500"),
+            bet_amt=Decimal("500"),
         )
 
         assert event.hand_id == hand_id
         assert event.event_order == 0
         assert event.event_type == "BET"
         assert event.player_num == 3
-        assert event.amount == Decimal("500")
+        assert event.bet_amt == Decimal("500")
 
     def test_event_record_board_card(self):
-        """BOARD_CARD 이벤트는 cards 필드를 가진다."""
+        """BOARD_CARD 이벤트는 board_cards 필드를 가진다."""
         from uuid import uuid4
 
         from src.sync_agent.models.event import EventRecord
@@ -279,11 +279,11 @@ class TestEventRecord:
             hand_id=uuid4(),
             event_order=10,
             event_type="BOARD_CARD",
-            cards=["Jd", "7c", "2s"],
+            board_cards=["Jd", "7c", "2s"],
         )
 
         assert event.event_type == "BOARD_CARD"
-        assert event.cards == ["Jd", "7c", "2s"]
+        assert event.board_cards == ["Jd", "7c", "2s"]
 
     def test_event_record_to_dict(self):
         """EventRecord.to_dict()는 딕셔너리를 반환한다."""

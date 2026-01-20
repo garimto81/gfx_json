@@ -56,7 +56,11 @@ class SessionRecord:
     created_at: datetime = field(default_factory=utcnow)
 
     def to_dict(self) -> dict[str, Any]:
-        """Supabase용 딕셔너리 변환."""
+        """Supabase용 딕셔너리 변환.
+
+        DB 컬럼명에 맞춰 매핑 (02-GFX-JSON-DB.md 기준).
+        - created_datetime_utc → session_created_at
+        """
         return {
             "id": str(self.id),
             "session_id": self.session_id,
@@ -66,7 +70,8 @@ class SessionRecord:
             "event_title": self.event_title,
             "software_version": self.software_version,
             "table_type": self.table_type,
-            "created_datetime_utc": (
+            # DB 컬럼명: session_created_at
+            "session_created_at": (
                 self.created_datetime_utc.isoformat()
                 if self.created_datetime_utc
                 else None
